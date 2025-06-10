@@ -8,7 +8,9 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 
 // Run the program with the user's input and output the image
@@ -26,6 +28,8 @@ public class RunDogUI extends JPanel implements ListSelectionListener {
     private JButton saveButton;
     private JButton loadButton;
     private DogFoodList dogFoodList;
+
+    private static JFrame mainFrame;
 
     public RunDogUI() {
         super(new BorderLayout());
@@ -58,25 +62,49 @@ public class RunDogUI extends JPanel implements ListSelectionListener {
     // MODIFIES: this
     // EFFECTS: create and show the load button
     private void loadButton() {
+//        JLabel label = new JLabel();
+//        label.setIcon(new ImageIcon(RunDogUI.class.getResource("IMG_1325.png")));
+
+        ImageIcon pawIcon = new ImageIcon(RunDogUI.class.getResource("IMG_1010.JPG"));
+
+//
         loadButton = new JButton(loadString);
+//
+        setBackground(loadButton, pawIcon);
+
+
         ActionListener loadListener = new LoadListener(loadButton,dogFoodList,listModel);
         loadButton.addActionListener(loadListener);
         loadButton.setEnabled(true);
+
+
     }
 
     // MODIFIES: this
     // EFFECTS: create and show the save button
     private void saveButton() {
+        ImageIcon pawIcon = new ImageIcon(RunDogUI.class.getResource("IMG_1011.JPG"));
+
         saveButton = new JButton(saveString);
+        setBackground(saveButton, pawIcon);
+
         ActionListener saveListener = new SaveListener(saveButton,dogFoodList);
         saveButton.addActionListener(saveListener);
         saveButton.setEnabled(true);
+
+
     }
 
     // MODIFIES: this
     // EFFECTS: create and show the add button
     private void addButton() {
+        ImageIcon pawIcon = new ImageIcon(RunDogUI.class.getResource("IMG_1012.JPG"));
+
         addButton = new JButton(addString);
+
+        setBackground(addButton, pawIcon);
+
+
         AddListener addListener = new AddListener(addButton,listModel,dogFoodList);
         addButton.addActionListener(addListener);
         addButton.setEnabled(true);
@@ -85,10 +113,56 @@ public class RunDogUI extends JPanel implements ListSelectionListener {
     // MODIFIES: this
     // EFFECTS: create and show the tailor button
     private void tailorButton() {
-        tailorButton = new JButton(tailorString);
+        ImageIcon pawIcon = new ImageIcon(RunDogUI.class.getResource("IMG_1013.JPG"));
+//        Image image = pawIcon.getImage().getScaledInstance(55, 55, Image.SCALE_SMOOTH);
+//        pawIcon = new ImageIcon(image);
+
+        tailorButton = new JButton(tailorString, pawIcon);
+
+        setBackground(tailorButton, pawIcon);
         TailorListener tailorListener = new TailorListener(tailorButton,dogFoodList,listModel);
         tailorButton.addActionListener(tailorListener);
         tailorButton.setEnabled(true);
+    }
+
+    private void setBackground(JButton bt, ImageIcon icon) {
+        ImageIcon pawIcon = new ImageIcon(RunDogUI.class.getResource("IMG_1325.png"));
+        Image image = pawIcon.getImage().getScaledInstance(55, 55, Image.SCALE_SMOOTH);
+        pawIcon = new ImageIcon(image);
+
+        Image image2 = icon.getImage().getScaledInstance(55, 55, Image.SCALE_SMOOTH);
+        icon = new ImageIcon(image2);
+
+        bt.setPreferredSize(new Dimension(55, 55));
+//
+        bt.setIcon(pawIcon);
+        bt.setHorizontalTextPosition(JButton.CENTER);
+        bt.setVerticalTextPosition(JButton.CENTER);
+        bt.setFont(new Font("Arial", Font.BOLD, 14));
+        bt.setForeground(Color.WHITE);
+
+        bt.setBorderPainted(false);
+        bt.setContentAreaFilled(false);
+        bt.setFocusPainted(false);
+        bt.setOpaque(true);
+
+        // Add hover effect
+        ImageIcon finalPawIcon = pawIcon;
+        ImageIcon enterIcon = icon;
+        String originalText = bt.getText();
+        bt.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                bt.setIcon(enterIcon);
+                bt.setText("");
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                bt.setIcon(finalPawIcon);
+                bt.setText(originalText);
+            }
+        });
+
+
     }
 
     // MODIFIES: this
@@ -141,31 +215,109 @@ public class RunDogUI extends JPanel implements ListSelectionListener {
     // EFFECTS: create and show the GUI
     // reference: https://medium.com/@michael71314/java-lesson-22-inserting-images-onto-the-jframe-a0a0b6540cca#:~:text=The%20frame.,the%20image%20on%20the%20JFrame.
     private static void createAndShowGUI() {
-        JFrame frame = new JFrame("Fill the Bellies");
-        JFrame frame2 = new JFrame("Image");
-        frame2.setSize(6, 6);
-        JLabel label = new JLabel();
-        label.setIcon(new ImageIcon(RunDogUI.class.getResource("may.jpg")));
-        frame2.add(label);
+        mainFrame = new JFrame("Fill the Bellies");
+//        JFrame frame2 = new JFrame("Image");
+//        frame2.setSize(6, 6);
+//        JLabel label = new JLabel();
+//        label.setIcon(new ImageIcon(RunDogUI.class.getResource("may.jpg")));
+//        frame2.add(label);
+
+        JPanel welcomePanel = createWelcomePanel();
+//        JFrame frame2 = new JFrame("Image");
+//        frame2.add(welcomePanel);
+//        welcomePanel.setSize(400, 700);
 
 
         //print the event log
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             ConsolePrinter.printLog();
         }));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Create and set up the content pane
         JComponent newContentPane = new RunDogUI();
         newContentPane.setOpaque(true);
-        frame.setContentPane(newContentPane);
+        mainFrame.setContentPane(newContentPane);
+
+
 
         //Display the window.
-        frame.pack();
-        frame.setVisible(true);
-        frame2.pack();
-        frame2.setVisible(true);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setContentPane(welcomePanel);
+        mainFrame.pack();
+        mainFrame.setLocationRelativeTo(null); // Center on screen
+        mainFrame.setVisible(true);
+
+
+
+        Runtime.getRuntime().addShutdownHook(new Thread(ConsolePrinter::printLog));
+//        frame2.pack();
+//        frame2.setVisible(true);
     }
+
+    private static JPanel createWelcomePanel() {
+        JPanel welcomePanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Draw background image
+                ImageIcon bgIcon = new ImageIcon(RunDogUI.class.getResource("may.jpg"));
+                if (bgIcon.getImage() != null) {
+                    g.drawImage(bgIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
+//        welcomePanel.setPreferredSize(new Dimension(1000, 700));
+
+        // Create start button
+        JButton startButton = new JButton("Click to Start");
+        styleStartButton(startButton);
+
+        // Add action listener to show main application
+        startButton.addActionListener(e -> showMainApplication());
+
+        // Add button to panel
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setOpaque(false); // Make transparent
+        buttonPanel.add(startButton);
+        welcomePanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Set preferred size for welcome panel
+        welcomePanel.setPreferredSize(new Dimension(800, 600));
+        return welcomePanel;
+        }
+
+    private static void styleStartButton(JButton button) {
+        button.setFont(new Font("Arial", Font.BOLD, 24));
+        button.setForeground(Color.WHITE);
+        button.setBackground(new Color(70, 130, 180)); // Steel blue
+        button.setOpaque(true);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(true);
+        button.setBorder(BorderFactory.createEmptyBorder(15, 30, 15, 30));
+
+        // Add hover effect
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(100, 149, 237)); // Lighter blue
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(70, 130, 180)); // Original blue
+            }
+        });
+    }
+
+    private static void showMainApplication() {
+        // Remove welcome panel and show main application
+        JComponent newContentPane = new RunDogUI();
+        newContentPane.setOpaque(true);
+        mainFrame.setContentPane(newContentPane);
+        mainFrame.pack();
+        mainFrame.setLocationRelativeTo(null); // Re-center
+    }
+
 
 
 
